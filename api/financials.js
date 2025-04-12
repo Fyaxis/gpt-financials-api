@@ -6,11 +6,20 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "symbol and type are required" });
   }
 
-  const yahooSymbol = symbol
-    .replace("US:", "")
-    .replace("HK:", ".HK")
-    .replace("SH:", ".SS")
-    .replace("EU:", "");
+  let yahooSymbol;
+  if (symbol.startsWith("US:")) {
+    yahooSymbol = symbol.replace("US:", "");
+  } else if (symbol.startsWith("HK:")) {
+    yahooSymbol = symbol.replace("HK:", "") + ".HK";
+  } else if (symbol.startsWith("SH:")) {
+    yahooSymbol = symbol.replace("SH:", "") + ".SS";
+  } else if (symbol.startsWith("TW:")) {  // 支持台湾股票
+    yahooSymbol = symbol.replace("TW:", "") + ".TW";
+  } else if (symbol.startsWith("EU:")) {
+    yahooSymbol = symbol.replace("EU:", "");
+  } else {
+    yahooSymbol = symbol;
+  }
 
   const typeMap = {
     income: "incomeStatementHistory",
@@ -18,18 +27,18 @@ export default async function handler(req, res) {
     cashflow: "cashflowStatementHistory"
   };
 
-  const module = typeMap[type];
-  if (!module) {
+  const mod = typeMap[type];
+  if (!mod) {
     return res.status(400).json({ error: "type must be one of income, balance, cashflow" });
   }
 
-  const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${yahooSymbol}?modules=${module}`;
+  const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${yahooSymbol}?modules=${mod}`;
 
   try {
     const response = await fetch(url);
     const data = await response.json();
 
-    const report = data?.quoteSummary?.result?.[0]?.[module];
+    const report = data?.quoteSummary?.result?.[0]?.[mod];
     if (!report) {
       return res.status(404).json({ error: "no report found" });
     }
