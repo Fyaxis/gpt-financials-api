@@ -1,4 +1,3 @@
-// api/financials.js
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
@@ -7,7 +6,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "symbol and type are required" });
   }
 
-  // 根据输入市场前缀调整股票代码格式
+  // 根据市场前缀调整股票代码格式
   let yahooSymbol;
   if (symbol.startsWith("US:")) {
     yahooSymbol = symbol.replace("US:", "");
@@ -25,7 +24,7 @@ export default async function handler(req, res) {
     yahooSymbol = symbol;
   }
 
-  // 使用年度数据的模块映射（Yahoo Finance 年度报表数据）
+  // 使用年度财报模块
   const typeMap = {
     income: "incomeStatementHistory",
     balance: "balanceSheetHistory",
@@ -37,14 +36,13 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "type must be one of income, balance, cashflow" });
   }
 
-  // 构造 Yahoo Finance 查询 URL
-  const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${yahooSymbol}?modules=${moduleName}`;
+  // 增加 corsDomain 参数，尝试绕过 Crumb 校验问题
+  const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${yahooSymbol}?modules=${moduleName}&corsDomain=finance.yahoo.com`;
 
   try {
     const response = await fetch(url);
     const data = await response.json();
 
-    // 提取财报数据
     const report = data?.quoteSummary?.result?.[0]?.[moduleName];
     if (!report) {
       return res.status(404).json({ error: "no report found", rawData: data });
