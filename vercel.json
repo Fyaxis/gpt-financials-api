@@ -1,9 +1,14 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "api/financials.js", "use": "@vercel/node" }
-  ],
+  "functions": {
+    "api/financials.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "routes": [
-    { "src": "/api/financials", "dest": "api/financials.js" }
+    {
+      "src": "/api/financials",
+      "dest": "api/financials.js"
+    }
   ]
 }
