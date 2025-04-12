@@ -1,13 +1,16 @@
-// 文件：api/financials.js
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   const { symbol, type } = req.query;
   if (!symbol || !type) {
     return res.status(400).json({ error: "symbol and type are required" });
   }
 
-  const yahooSymbol = symbol.replace("US:", "").replace("HK:", ".HK").replace("SH:", ".SS").replace("EU:", "");
+  const yahooSymbol = symbol
+    .replace("US:", "")
+    .replace("HK:", ".HK")
+    .replace("SH:", ".SS")
+    .replace("EU:", "");
 
   const typeMap = {
     income: "incomeStatementHistory",
@@ -39,4 +42,4 @@ module.exports = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-};
+}
