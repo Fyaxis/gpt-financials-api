@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/financials.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/financials", "dest": "api/financials.js" }
+  ]
+}

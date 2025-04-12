@@ -1,0 +1,8 @@
+{
+  "name": "gpt-financials-api",
+  "version": "1.0.0",
+  "main": "api/financials.js",
+  "dependencies": {
+    "node-fetch": "^2.6.9"
+  }
+}
